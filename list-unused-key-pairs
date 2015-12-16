@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+for key in $(aws ec2 describe-key-pairs | jq --raw-output '.KeyPairs[].KeyName') ; do
+   usage_count=$(aws ec2 describe-instances --filters "Name=key-name,Values=$key" | jq '.Reservations | length')
+   if [ "$usage_count" == 0 ] ; then
+     echo "$key"
+   fi
+done
+
